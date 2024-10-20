@@ -26,3 +26,24 @@ module.exports.getUserInfo = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };
+
+module.exports.getAllUsers = async (req, res) => {
+  try {
+    const _id = req.user._id;
+
+    // checks if user exists
+    const user = await User.findById(_id);
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User doesn't exist" });
+    }
+
+    const allUsers = await User.find({ _id: { $ne: _id } }).select(
+      "profile _id email"
+    );
+    res
+      .status(200)
+      .json({ success: true, message: "Users fetched succesfully", allUsers });
+  } catch (error) {}
+};

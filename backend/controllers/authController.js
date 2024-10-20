@@ -16,6 +16,8 @@ module.exports.registerUser = async (req, res) => {
       });
     }
 
+    // validate the request
+
     // creates a new user
     const newUser = new User({
       email,
@@ -25,11 +27,14 @@ module.exports.registerUser = async (req, res) => {
     await newUser.save();
 
     // generate a token
-    const token = jwt.sign({ _id: user._id }, JWT_TOKEN, { expiresIn: "1d" });
+    const token = jwt.sign({ _id: newUser._id }, JWT_TOKEN, {
+      expiresIn: "1d",
+    });
 
     res.status(201).json({ success: true, message: "Account created" });
   } catch (error) {
     res.status(500).json({ success: false, message: "Internal Server Error" });
+    console.log(error);
   }
 };
 
@@ -54,9 +59,12 @@ module.exports.loginUser = async (req, res) => {
     }
 
     // generate a token
-    const token = jwt.sign({ _id: user._id }, JWT_TOKEN, { expiresIn: "1d" });
+    const token = jwt.sign({ _id: user._id }, JWT_TOKEN, {
+      expiresIn: "1d",
+    });
 
     res.status(200).json({ success: true, message: "User logged in", token });
-    res.send("Yopu are loiged in")
-  } catch (error) {}
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
 };
